@@ -1,0 +1,21 @@
+Features
+
+* Vectorized Laplace Solver: Calculates the distributed capacitance (C) and inductance (L) matrices along the line's varying geometry using a highly optimized, vectorized Finite Difference Method (FDM) for the Laplace equation.
+* Advanced ODE Solver: Solves the coupled second-order Telegrapher's equations using the highly stable and accurate 4th-Order Adams-Bashforth-Moulton (ABM4) Predictor-Corrector method.
+* RK4 Bootstrapping: Implements a 4th-Order Runge-Kutta (RK4) method to seamlessly initialize the historical data required by the multistep Adams method.
+* Wave Animation: Generates real-time animated contour plots of the spatial voltage distribution as it oscillates through the time domain.
+
+How It Works
+
+The simulation is broken down into three main phases:
+
+1. Electrostatic Parameter Extraction:
+The geometry of the transmission line is defined on a 2D grid. The code applies boundary conditions (e.g., 1V on specific plates) and relaxes the grid using a vectorized Jacobi-style iteration to solve Laplace's equation (∇²V = 0). From the resulting electric potential field, the per-unit-length capacitance and inductance matrices (C1, Cm, C2 and L1, Lm, L2) are extracted at every point along the Z-axis.
+
+2. Wave Equation Integration:
+The spatial voltage distribution along the Z-axis is governed by coupled second-order ordinary differential equations. By converting these into a system of first-order ODEs, the solver steps through space using:
+   * RK4 for the first 3 steps (Initial Value Problem bootstrapping).
+   * ABM4 for the remainder of the domain, providing excellent stability for the highly oscillatory spatial waves.
+
+3. Time-Domain Animation:
+The spatial voltage envelopes are multiplied by cos(omega * t) to convert the phasor solutions back into the time domain. Matplotlib's FuncAnimation renders the wave propagation over multiple cycles.
